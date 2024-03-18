@@ -1,8 +1,10 @@
 package com.asthiseta.diyretrofit.networking.client
 
 import com.asthiseta.diyretrofit.networking.parser.Parser
+import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 
 class Client {
     companion object {
@@ -36,19 +38,49 @@ class Client {
             val client = Client()
             return client
         }
-
     }
 
-    fun <T> enqueue(endpoint:String, method: String, callback : ConnectionCalllback<T>) {
+    private fun buildQueryString(params: Map<String, String>): String {
+        val queryString = StringBuilder()
+        queryString.append("?")
+        for ((key, value) in params) {
+            queryString.append(URLEncoder.encode(key, "UTF-8"))
+            queryString.append("=")
+            queryString.append(URLEncoder.encode(value, "UTF-8"))
+            queryString.append("&")
+        }
+        queryString.deleteCharAt(queryString.length - 1) // Remove the last '&'
+        return queryString.toString()
+    }
+
+    fun <T> enqueue(endpoint:String, method: String, requestBody: String? = null,
+                    queryParams: Map<String, String>? = null, callback : ConnectionCalllback<T>) {
         Thread {
             try {
-                val new_url = URL(url.toString() + endpoint)
-                httpURLConnection = new_url.openConnection() as HttpURLConnection
+                var newUrl = URL(url.toString() + endpoint)
+                // Add query parameters to the URL
+                if (!queryParams.isNullOrEmpty()) {
+                    val queryString = buildQueryString(queryParams)
+                    newUrl = URL(newUrl.toString() + queryString)
+                }
+
+                httpURLConnection = newUrl.openConnection() as HttpURLConnection
                 httpURLConnection?.requestMethod = method
                 httpURLConnection?.setRequestProperty(defaultRequestProperty, defaultRequestContent)
                 httpURLConnection?.doInput = true
                 httpURLConnection?.doOutput = true
+
+                // Set request body if present
+                if (requestBody != null) {
+                    val outputStream = httpURLConnection?.outputStream
+                    val writer = OutputStreamWriter(outputStream)
+                    writer.write(requestBody)
+                    writer.flush()
+                    writer.close()
+                }
+
                 httpURLConnection?.connect()
+
                 val responseCode = httpURLConnection?.responseCode
                 if (isSuccessFull(responseCode!!)) {
                     val inputStream = httpURLConnection?.inputStream
