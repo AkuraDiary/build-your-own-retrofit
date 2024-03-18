@@ -1,6 +1,7 @@
 package com.asthiseta.diyretrofit.networking.client
 
 
+import android.content.Context
 import android.util.Log
 import com.asthiseta.diyretrofit.networking.parser.Parser
 import java.io.OutputStreamWriter
@@ -15,7 +16,7 @@ class Client {
         const val PUT = "PUT"
         const val DELETE = "DELETE"
         fun isSuccessFull(code: Int): Boolean {
-            return code == 201 || code == 200
+            return code in 200..299
         }
 
     }
@@ -43,7 +44,7 @@ class Client {
         }
     }
 
-     fun buildQueryString(params: Map<String, String>): String {
+    fun buildQueryString(params: Map<String, String>): String {
         val queryString = StringBuilder()
         queryString.append("?")
         for ((key, value) in params) {
@@ -56,19 +57,24 @@ class Client {
         return queryString.toString()
     }
 
-     fun log(message: String) {
+    fun log(message: String) {
         // Replace this with your desired logging mechanism
         Log.d("[ Rip-troffit Log : ]", message)
     }
 
-     fun errorLog(message: String) {
+    fun errorLog(message: String) {
         // Replace this with your desired logging mechanism
-        Log.e("[ Rip-troffit Error : ]", message)
+        Log.e("[ Rip-troffit Error : ]", message, Throwable())
     }
 
     inline fun <reified T> enqueue(
-        endpoint: String, method: String, requestBody: String? = null,
-        queryParams: Map<String, String>? = null, callback: ConnectionCalllback<T>
+        context : Context,
+        endpoint: String,
+        method: String,
+        requestBody: String? = null,
+        headers: Map<String, String>? = null, // New parameter for headers
+        queryParams: Map<String, String>? = null,
+        callback: ConnectionCalllback<T>
     ) {
         Thread {
             try {
@@ -81,9 +87,14 @@ class Client {
 
                 log("Sending $method request to: $newUrl")
 
-                httpURLConnection = newUrl.openConnection() as HttpURLConnection
                 httpURLConnection?.requestMethod = method
                 httpURLConnection?.setRequestProperty(defaultRequestProperty, defaultRequestContent)
+
+                // Set headers if present
+                headers?.forEach { (key, value) ->
+                    httpURLConnection?.setRequestProperty(key, value)
+                }
+
                 httpURLConnection?.doInput = true
                 httpURLConnection?.doOutput = true
 
@@ -97,28 +108,34 @@ class Client {
                     writer.close()
                 }
 
+                httpURLConnection = newUrl.openConnection() as HttpURLConnection
+
                 httpURLConnection?.connect()
 
                 val responseCode = httpURLConnection?.responseCode
                 log("Response Code: $responseCode")
+                log("Response Message: ${httpURLConnection?.responseMessage}")
+                log("Response code: $responseCode")
                 if (isSuccessFull(responseCode!!)) {
-
                     val inputStream = httpURLConnection?.inputStream
                     val response = inputStream?.bufferedReader().use { it?.readText() }
                     log("Response: $response")
 
                     val modelResponse = innerParser!!.parse(response!!, T::class.java)
+                      callback.onSuccess(modelResponse)
 
-                    callback.onSuccess(modelResponse)
                 } else {
                     val error =
                         httpURLConnection?.errorStream?.bufferedReader().use { it?.readText() }
                             ?: "Error occurred"
                     errorLog(error)
+
                     callback.onError(error)
                 }
             } catch (e: Exception) {
                 errorLog(e.message!!)
+
+
                 callback.onError(e.message!!)
             } finally {
                 log("Closing Connection")

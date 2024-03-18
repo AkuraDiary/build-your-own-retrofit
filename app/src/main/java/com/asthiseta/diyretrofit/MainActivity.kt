@@ -23,17 +23,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun getAllRestaurant() {
         Config.client.enqueue(
+            context = this@MainActivity,
             endpoint = "list",
             method = Client.GET,
             callback = object : ConnectionCalllback<RestaurantResponseModel> {
                 override fun onSuccess(response: RestaurantResponseModel) {
-                    binding?.apply {
-                       textView?.text = response.toString()
+                    runOnUiThread {
+                        binding?.apply {
+//                            textView?.text = response?.restaurants?.get(0)?.name
+                            textView?.text = response?.count.toString()
+                        }
                     }
                 }
 
                 override fun onError(error: String) {
                     // Handle the error
+                    runOnUiThread {
+                        binding?.apply {
+                            textView?.text = error
+                        }
+                    }
                 }
             }
         )
