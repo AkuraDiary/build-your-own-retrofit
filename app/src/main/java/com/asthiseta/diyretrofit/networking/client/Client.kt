@@ -1,5 +1,6 @@
 package com.asthiseta.diyretrofit.networking.client
 
+
 import android.util.Log
 import com.asthiseta.diyretrofit.networking.parser.Parser
 import java.io.OutputStreamWriter
@@ -19,11 +20,11 @@ class Client {
 
     }
 
-    private var httpURLConnection: HttpURLConnection? = null
+    var httpURLConnection: HttpURLConnection? = null
     var innerParser: Parser? = null
     var url: URL? = null
-    private var defaultRequestContent = "application/json"
-    private var defaultRequestProperty = "Content-Type"
+    var defaultRequestContent = "application/json"
+    var defaultRequestProperty = "Content-Type"
 
     class Builder {
         private val client = Client()
@@ -42,7 +43,7 @@ class Client {
         }
     }
 
-    private fun buildQueryString(params: Map<String, String>): String {
+     fun buildQueryString(params: Map<String, String>): String {
         val queryString = StringBuilder()
         queryString.append("?")
         for ((key, value) in params) {
@@ -55,17 +56,17 @@ class Client {
         return queryString.toString()
     }
 
-    private fun log(message: String) {
+     fun log(message: String) {
         // Replace this with your desired logging mechanism
         Log.d("[ Rip-troffit Log : ]", message)
     }
 
-    private fun errorLog(message: String) {
+     fun errorLog(message: String) {
         // Replace this with your desired logging mechanism
         Log.e("[ Rip-troffit Error : ]", message)
     }
 
-    fun <T> enqueue(
+    inline fun <reified T> enqueue(
         endpoint: String, method: String, requestBody: String? = null,
         queryParams: Map<String, String>? = null, callback: ConnectionCalllback<T>
     ) {
@@ -105,7 +106,10 @@ class Client {
                     val inputStream = httpURLConnection?.inputStream
                     val response = inputStream?.bufferedReader().use { it?.readText() }
                     log("Response: $response")
-                    callback.onSuccess(response!!)
+
+                    val modelResponse = innerParser!!.parse(response!!, T::class.java)
+
+                    callback.onSuccess(modelResponse)
                 } else {
                     val error =
                         httpURLConnection?.errorStream?.bufferedReader().use { it?.readText() }
