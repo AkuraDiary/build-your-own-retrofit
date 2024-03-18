@@ -1,5 +1,6 @@
 package com.asthiseta.diyretrofit.networking.client
 
+import android.util.Log
 import com.asthiseta.diyretrofit.networking.parser.Parser
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
@@ -12,31 +13,32 @@ class Client {
         const val GET = "GET"
         const val PUT = "PUT"
         const val DELETE = "DELETE"
-        fun isSuccessFull(code : Int) : Boolean {
+        fun isSuccessFull(code: Int): Boolean {
             return code == 201 || code == 200
         }
 
     }
 
     private var httpURLConnection: HttpURLConnection? = null
-    var innerParser : Parser? = null
+    var innerParser: Parser? = null
     var url: URL? = null
     private var defaultRequestContent = "application/json"
     private var defaultRequestProperty = "Content-Type"
 
-    inner class Builder {
+    class Builder {
+        private val client = Client()
         fun setUrl(url: String): Builder {
-            this@Client.url = URL(url)
+            client.url = URL(url)
             return this
         }
 
         fun setParser(parser: Parser): Builder {
-            innerParser = parser
+            client.innerParser = parser
             return this
         }
+
         fun build(): Client {
-            val client = Client()
-            return client
+            return this.client
         }
     }
 
@@ -53,8 +55,20 @@ class Client {
         return queryString.toString()
     }
 
-    fun <T> enqueue(endpoint:String, method: String, requestBody: String? = null,
-                    queryParams: Map<String, String>? = null, callback : ConnectionCalllback<T>) {
+    private fun log(message: String) {
+        // Replace this with your desired logging mechanism
+        Log.d("[ Rip-troffit Log : ]", message)
+    }
+
+    private fun errorLog(message: String) {
+        // Replace this with your desired logging mechanism
+        Log.e("[ Rip-troffit Error : ]", message)
+    }
+
+    fun <T> enqueue(
+        endpoint: String, method: String, requestBody: String? = null,
+        queryParams: Map<String, String>? = null, callback: ConnectionCalllback<T>
+    ) {
         Thread {
             try {
                 var newUrl = URL(url.toString() + endpoint)
@@ -64,6 +78,8 @@ class Client {
                     newUrl = URL(newUrl.toString() + queryString)
                 }
 
+                log("Sending $method request to: $newUrl")
+
                 httpURLConnection = newUrl.openConnection() as HttpURLConnection
                 httpURLConnection?.requestMethod = method
                 httpURLConnection?.setRequestProperty(defaultRequestProperty, defaultRequestContent)
@@ -72,6 +88,7 @@ class Client {
 
                 // Set request body if present
                 if (requestBody != null) {
+                    log("Request Body: $requestBody")
                     val outputStream = httpURLConnection?.outputStream
                     val writer = OutputStreamWriter(outputStream)
                     writer.write(requestBody)
@@ -82,16 +99,25 @@ class Client {
                 httpURLConnection?.connect()
 
                 val responseCode = httpURLConnection?.responseCode
+                log("Response Code: $responseCode")
                 if (isSuccessFull(responseCode!!)) {
+
                     val inputStream = httpURLConnection?.inputStream
                     val response = inputStream?.bufferedReader().use { it?.readText() }
+                    log("Response: $response")
                     callback.onSuccess(response!!)
                 } else {
-                    callback.onError("Error")
+                    val error =
+                        httpURLConnection?.errorStream?.bufferedReader().use { it?.readText() }
+                            ?: "Error occurred"
+                    errorLog(error)
+                    callback.onError(error)
                 }
             } catch (e: Exception) {
+                errorLog(e.message!!)
                 callback.onError(e.message!!)
             } finally {
+                log("Closing Connection")
                 httpURLConnection?.disconnect()
             }
         }.start()
