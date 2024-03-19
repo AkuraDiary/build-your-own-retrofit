@@ -61,9 +61,9 @@ class JsonParser : Parser {
         val instance = clazz.newInstance() 
         /*
         here I'm using the newInstance() which creates a new object/instance of the class first
-        the problem is, it uses a no-parameter constructor (default constructor)
+        the problem is, that it uses a zero-parameter constructor (default constructor)
         you could do it with regular classes, but with data classes, you have to initiate the attribute upon creation
-        thus why we initiate the attribute with null in our data classes
+        that's why we initiate the attribute with null in our data classes
         */
 
         /* rest of the code */
@@ -94,7 +94,7 @@ in your `Config.kt` should be looking similar to this
 
 object Config {
 
-    const val BASE_URL = "put your URL here"
+    const val BASE_URL = "put your base URL here should be end with "/" "
 
     val client :Client = Builder()
         .setUrl(BASE_URL)
@@ -135,10 +135,39 @@ object RestoranRepo {
         )
     }
 }
+
+// I think the code above is already self-explanatory
 ```
 
+Then in your activity you can use it like this
+```kotlin
 
+    RestoranRepo.getRestaurants(
+            successCallback = { response ->
 
+                //Because we can't use LiveData I'm using runOnUiThread to update the UI state based on the response
+                runOnUiThread{
+                    // update the UI here
+                    response?.let {
+                        // binding?.textView?.text = it.toString()
+                    }
+                }
+
+            },
+
+            errorCallback = {
+                runOnUiThread {
+                    // update the UI or show toast here
+                    // binding?.textView?.text = it
+                }
+            }
+        )
+
+```
+
+And That's it. 
+
+> Funny enough I made this while doing morning call with my GF ❤️ 
 
 # Thanks
 A contribution is really appreciated
