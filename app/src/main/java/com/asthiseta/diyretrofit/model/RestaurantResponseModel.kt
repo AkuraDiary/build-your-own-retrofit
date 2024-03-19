@@ -1,8 +1,8 @@
 package com.asthiseta.diyretrofit.model
 
 data class RestaurantResponseModel(
-    var count: Int?,
-    var error: Boolean?,
-    var message: String?,
-    var restaurants: List<RestaurantModel>?
+    var count: Int? = null,
+    var error: Boolean? = null,
+    var message: String? = null,
+    var restaurants: List<RestaurantModel>? = null
 )

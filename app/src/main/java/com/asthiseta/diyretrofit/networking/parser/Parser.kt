@@ -1,60 +1,59 @@
 package com.asthiseta.diyretrofit.networking.parser
 
+import com.asthiseta.diyretrofit.networking.client.Client
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.reflect.ParameterizedType
 
 interface Parser {
-    fun <T> parse(json: String, clazz: Class<T>): T
+    fun <T> parse(jsonString: String, clazz: Class<T>): Any?
 
 }
 
 
 class JsonParser : Parser {
-    override fun <T> parse(json: String, clazz: Class<T>): T {
-        return if (List::class.java.isAssignableFrom(clazz)) {
-            parseList(json, clazz)
-        } else {
-            parseObject(json, clazz)
-        }
-    }
-
-    private fun <T> parseObject(json: String, clazz: Class<T>): T {
-        val jsonObject = JSONObject(json)
-        val constructor = clazz.getDeclaredConstructor()
-        val instance = constructor.newInstance()
-
-        for (field in clazz.declaredFields) {
+    override fun <T> parse(jsonString: String, clazz: Class<T>): Any? {
+        val jsonObject = JSONObject(jsonString)
+        val instance = clazz.newInstance()
+        val declaredFields = clazz.declaredFields
+        for (field in declaredFields) {
             field.isAccessible = true
             val fieldName = field.name
-            if (jsonObject.has(fieldName)) {
-                val value = jsonObject[fieldName]
-                // Handle nested objects recursively
-                if (field.type.isAssignableFrom(JSONObject::class.java)) {
-                    field.set(instance, value)
+            val fieldValue = jsonObject.opt(fieldName)
+            if (fieldValue != null) {
+                if (field.type == List::class.java) {
+
+                    // Handle list type
+                    val genericType = field.genericType as ParameterizedType
+                    val listType = genericType.actualTypeArguments[0] as Class<*>
+                    val itemList = parseList(fieldValue.toString(), listType)
+                    Client.log("$fieldName: $itemList")
+                    field.set(instance, itemList)
+                } else if (field.type == JSONObject::class.java) {
+                    // Handle JSONObject type
+                    val item = parse(fieldValue.toString(), field.type)
+                    Client.log("$fieldName: $item")
+                    field.set(instance, item)
                 } else {
-                    field.set(instance, value)
+                    // Handle other types
+                    Client.log("$fieldName: $fieldValue")
+                    field.set(instance, fieldValue)
                 }
             }
         }
         return instance
     }
 
-    private fun <T> parseList(json: String, clazz: Class<T>): T {
-        val jsonArray = JSONArray(json)
+    private fun parseList(toString: String, listType: Class<*>): Any? {
+        val jsonArray = JSONArray(toString)
         val list = mutableListOf<Any>()
-
         for (i in 0 until jsonArray.length()) {
             val item = jsonArray[i]
-            // Handle nested objects recursively
-            if (item is JSONObject) {
-                val nestedObject = parseObject(item.toString(), clazz)
-                list.add(nestedObject!!)
-            } else {
-                list.add(item)
-            }
+            val parsedItem = parse(item.toString(), listType)
+            list.add(parsedItem!!)
         }
-
-        @Suppress("UNCHECKED_CAST")
-        return list as T
+        return list
     }
+
+
 }

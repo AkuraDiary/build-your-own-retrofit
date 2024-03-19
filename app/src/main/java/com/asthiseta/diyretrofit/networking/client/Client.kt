@@ -19,6 +19,16 @@ class Client {
             return code in 200..299
         }
 
+        fun log(message: String) {
+            // Replace this with your desired logging mechanism
+            Log.d("[ Rip-troffit Log : ]", message)
+        }
+
+        fun errorLog(message: String) {
+            // Replace this with your desired logging mechanism
+            Log.e("[ Rip-troffit Error : ]", message, Throwable())
+        }
+
     }
 
     var httpURLConnection: HttpURLConnection? = null
@@ -57,18 +67,13 @@ class Client {
         return queryString.toString()
     }
 
-    fun log(message: String) {
-        // Replace this with your desired logging mechanism
-        Log.d("[ Rip-troffit Log : ]", message)
-    }
 
-    fun errorLog(message: String) {
-        // Replace this with your desired logging mechanism
-        Log.e("[ Rip-troffit Error : ]", message, Throwable())
-    }
 
+    fun <T> buildRequestBody(data : T) : String{
+        // TODO
+        return ""
+    }
     inline fun <reified T> enqueue(
-        context : Context,
         endpoint: String,
         method: String,
         requestBody: String? = null,
@@ -122,7 +127,7 @@ class Client {
                     log("Response: $response")
 
                     val modelResponse = innerParser!!.parse(response!!, T::class.java)
-                      callback.onSuccess(modelResponse)
+                    callback.onSuccess(modelResponse as T?)
 
                 } else {
                     val error =
@@ -134,8 +139,6 @@ class Client {
                 }
             } catch (e: Exception) {
                 errorLog(e.message!!)
-
-
                 callback.onError(e.message!!)
             } finally {
                 log("Closing Connection")
