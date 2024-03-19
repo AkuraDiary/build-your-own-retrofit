@@ -4,6 +4,7 @@ package com.asthiseta.diyretrofit.networking.client
 import android.content.Context
 import android.util.Log
 import com.asthiseta.diyretrofit.networking.parser.Parser
+import org.json.JSONObject
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -70,9 +71,17 @@ class Client {
 
 
     fun <T> buildRequestBody(data : T) : String{
-        // TODO
-        return ""
+        val jsonObject = JSONObject()
+        val properties = data!!::class.java.declaredFields
+
+        for (prop in properties) {
+            prop.isAccessible = true
+            jsonObject.put(prop.name, prop.get(data))
+        }
+
+        return jsonObject.toString()
     }
+
     inline fun <reified T> enqueue(
         endpoint: String,
         method: String,

@@ -26,16 +26,16 @@ class JsonParser : Parser {
                     val genericType = field.genericType as ParameterizedType
                     val listType = genericType.actualTypeArguments[0] as Class<*>
                     val itemList = parseList(fieldValue.toString(), listType)
-                    Client.log("$fieldName: $itemList")
+//                    Client.log("$fieldName: $itemList")
                     field.set(instance, itemList)
                 } else if (field.type == JSONObject::class.java) {
                     // Handle JSONObject type
                     val item = parse(fieldValue.toString(), field.type)
-                    Client.log("$fieldName: $item")
+//                    Client.log("$fieldName: $item")
                     field.set(instance, item)
                 } else {
                     // Handle other types
-                    Client.log("$fieldName: $fieldValue")
+//                    Client.log("$fieldName: $fieldValue")
                     field.set(instance, fieldValue)
                 }
             }
