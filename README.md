@@ -80,8 +80,62 @@ class JsonParser : Parser {
 
 ```
 
-
 ## Using it
+Though I said it's a DIY retrofit implementation, it's not fully the same as retrofit 
+> mainly because I don't quite understand Annotations
+
+### This is only the basic usage of the program (If you have a better way to do it, feel free to contribute)
+
+For starter, you need to create the client instance first, like so we called the `retrofitConfig`
+in your `Config.kt` should be looking similar to this
+```kotlin
+
+//Config.kt
+
+object Config {
+
+    const val BASE_URL = "put your URL here"
+
+    val client :Client = Builder()
+        .setUrl(BASE_URL)
+        .setParser(JsonParser())
+        .build()
+
+}
+```
+Then we skip the `ApiService` class and create a method calls the method directly from your Repository like this : 
+
+```kotlin
+object RestoranRepo {
+
+    var restaurantResponseModel: RestaurantResponseModel? = null
+    fun getRestaurants(
+        successCallback: (RestaurantResponseModel?) -> Unit,
+        errorCallback: (String) -> Unit
+    ) {
+        Config.client.enqueue(
+            endpoint = "list",
+            method = Client.GET,
+            // here are some example if you need to use some parameters
+            // headers = mapOf("Authorization" to "Bearer ${Config.token here}") 
+            // queryParams = mapOf("q" to "restaurant"), //{base url}/list?q=restaurant
+            // requestBody = Client.buildRequestBody(
+            //      Ayam("ayam", 10)
+            // ),
+            callback = object : ConnectionCalllback<RestaurantResponseModel?> {
+                override fun onSuccess(response: RestaurantResponseModel?) {
+                    restaurantResponseModel = response
+                    successCallback(response)
+                }
+
+                override fun onError(error: String) {
+                    errorCallback(error)
+                }
+            }
+        )
+    }
+}
+```
 
 
 
