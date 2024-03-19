@@ -30,7 +30,9 @@ class MainActivity : AppCompatActivity() {
     private fun getAllRestaurant() {
         RestoranRepo.getRestaurants(
             successCallback = { response ->
+
                 runOnUiThread{
+                    // update the UI here
                     response?.let {
                         binding?.textView?.text = it.toString()
                     }
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
             errorCallback = {
                 runOnUiThread {
+                    // update the UI here or show toast
                     binding?.textView?.text = it
                 }
             }

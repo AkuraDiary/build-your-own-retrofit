@@ -2,6 +2,7 @@ package com.asthiseta.diyretrofit.networking.client
 
 
 import android.content.Context
+import android.database.sqlite.SQLiteQueryBuilder.buildQueryString
 import android.util.Log
 import com.asthiseta.diyretrofit.networking.parser.Parser
 import org.json.JSONObject
@@ -55,7 +56,7 @@ class Client {
         }
     }
 
-    fun buildQueryString(params: Map<String, String>): String {
+     fun buildQueryString(params: Map<String, String>): String {
         val queryString = StringBuilder()
         queryString.append("?")
         for ((key, value) in params) {
@@ -67,8 +68,6 @@ class Client {
         queryString.deleteCharAt(queryString.length - 1) // Remove the last '&'
         return queryString.toString()
     }
-
-
 
     fun <T> buildRequestBody(data : T) : String{
         val jsonObject = JSONObject()

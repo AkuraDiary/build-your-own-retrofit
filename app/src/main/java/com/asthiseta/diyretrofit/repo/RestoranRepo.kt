@@ -15,6 +15,8 @@ object RestoranRepo {
         Config.client.enqueue(
             endpoint = "list",
             method = Client.GET,
+            // headers = mapOf("Authorization" to "Bearer ${Config.token here}")
+            // queryParams = mapOf("q" to "restaurant"), //{base url}/list?q=restaurant
             callback = object : ConnectionCalllback<RestaurantResponseModel?> {
                 override fun onSuccess(response: RestaurantResponseModel?) {
                     restaurantResponseModel = response
