@@ -145,7 +145,8 @@ Then in your activity you can use it like this
     RestoranRepo.getRestaurants(
             successCallback = { response ->
 
-                //Because we can't use LiveData I'm using runOnUiThread to update the UI state based on the response
+                // Because we can't use LiveData I'm using runOnUiThread
+                // to update the UI state based on the response
                 runOnUiThread{
                     // update the UI here
                     response?.let {
@@ -162,7 +163,6 @@ Then in your activity you can use it like this
                 }
             }
         )
-
 ```
 
 And That's it. 
