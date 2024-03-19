@@ -1,8 +1,5 @@
 package com.asthiseta.diyretrofit.networking.client
 
-
-import android.content.Context
-import android.database.sqlite.SQLiteQueryBuilder.buildQueryString
 import android.util.Log
 import com.asthiseta.diyretrofit.networking.parser.Parser
 import org.json.JSONObject
@@ -30,7 +27,17 @@ class Client {
             // Replace this with your desired logging mechanism
             Log.e("[ Rip-troffit Error : ]", message, Throwable())
         }
+        fun <T> buildRequestBody(data : T) : String{
+            val jsonObject = JSONObject()
+            val properties = data!!::class.java.declaredFields
 
+            for (prop in properties) {
+                prop.isAccessible = true
+                jsonObject.put(prop.name, prop.get(data))
+            }
+
+            return jsonObject.toString()
+        }
     }
 
     var httpURLConnection: HttpURLConnection? = null
@@ -67,18 +74,6 @@ class Client {
         }
         queryString.deleteCharAt(queryString.length - 1) // Remove the last '&'
         return queryString.toString()
-    }
-
-    fun <T> buildRequestBody(data : T) : String{
-        val jsonObject = JSONObject()
-        val properties = data!!::class.java.declaredFields
-
-        for (prop in properties) {
-            prop.isAccessible = true
-            jsonObject.put(prop.name, prop.get(data))
-        }
-
-        return jsonObject.toString()
     }
 
     inline fun <reified T> enqueue(

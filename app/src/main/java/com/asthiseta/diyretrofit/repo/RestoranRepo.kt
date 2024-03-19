@@ -1,5 +1,6 @@
 package com.asthiseta.diyretrofit.repo
 
+import com.asthiseta.diyretrofit.model.Ayam
 import com.asthiseta.diyretrofit.model.RestaurantResponseModel
 import com.asthiseta.diyretrofit.networking.Config
 import com.asthiseta.diyretrofit.networking.client.Client
@@ -17,6 +18,9 @@ object RestoranRepo {
             method = Client.GET,
             // headers = mapOf("Authorization" to "Bearer ${Config.token here}")
             // queryParams = mapOf("q" to "restaurant"), //{base url}/list?q=restaurant
+            // requestBody = Client.buildRequestBody(
+            //      Ayam("ayam", 10)
+            // ),
             callback = object : ConnectionCalllback<RestaurantResponseModel?> {
                 override fun onSuccess(response: RestaurantResponseModel?) {
                     restaurantResponseModel = response
