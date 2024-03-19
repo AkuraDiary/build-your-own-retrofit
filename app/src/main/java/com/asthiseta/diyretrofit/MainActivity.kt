@@ -10,6 +10,7 @@ import com.asthiseta.diyretrofit.model.RestaurantResponseModel
 import com.asthiseta.diyretrofit.networking.Config
 import com.asthiseta.diyretrofit.networking.client.Client
 import com.asthiseta.diyretrofit.networking.client.ConnectionCalllback
+import com.asthiseta.diyretrofit.repo.RestoranRepo
 
 class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
@@ -22,27 +23,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAllRestaurant() {
-        Config.client.enqueue(
-            context = this@MainActivity,
-            endpoint = "list",
-            method = Client.GET,
-            callback = object : ConnectionCalllback<RestaurantResponseModel> {
-                override fun onSuccess(response: RestaurantResponseModel) {
-                    runOnUiThread {
-                        binding?.apply {
-//                            textView?.text = response?.restaurants?.get(0)?.name
-                            textView?.text = response?.count.toString()
-                        }
+        RestoranRepo.getRestaurants(
+            successCallback = { response ->
+                runOnUiThread{
+                    response?.let {
+                        binding?.textView?.text = it.toString()
                     }
                 }
 
-                override fun onError(error: String) {
-                    // Handle the error
-                    runOnUiThread {
-                        binding?.apply {
-                            textView?.text = error
-                        }
-                    }
+            },
+
+            errorCallback = {
+                runOnUiThread {
+                    binding?.textView?.text = it
                 }
             }
         )
