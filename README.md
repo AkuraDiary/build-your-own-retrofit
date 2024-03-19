@@ -33,7 +33,7 @@ General implementation of the parser, mainly for parsing the JSON string into us
 I'm trying to use the generalization and abstraction for the parser so that it can be used easily and support list and nested object parsing. There are some rules to make in creating the data classes `models` to achieve the desired results
   - The attribute names should be identical / reflecting the field name in the JSON response
   - The attribute should be using `var` instead of `val`
-  - The attribute should be Nullable ie 
+  - The attribute should be Nullable 
   - The attribute should be initiated as null
 
 ```kotlin
@@ -145,7 +145,7 @@ Then in your activity you can use it like this
     RestoranRepo.getRestaurants(
             successCallback = { response ->
 
-                // Because we can't use LiveData I'm using runOnUiThread
+                // Since we can't use LiveData I'm using runOnUiThread
                 // to update the UI state based on the response
                 runOnUiThread{
                     // update the UI here
