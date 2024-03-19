@@ -7,7 +7,6 @@ import java.lang.reflect.ParameterizedType
 
 interface Parser {
     fun <T> parse(jsonString: String, clazz: Class<T>): Any?
-
 }
 
 
