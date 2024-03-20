@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         getAllRestaurant()
 
         val ayam = Ayam("ayam", 1)
-        Log.d("Ayam", Config.client.buildRequestBody(ayam))
+        Log.d("Ayam", Client.buildRequestBody(ayam))
     }
 
     private fun getAllRestaurant() {

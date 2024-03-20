@@ -27,7 +27,8 @@ class Client {
             // Replace this with your desired logging mechanism
             Log.e("[ Rip-troffit Error : ]", message, Throwable())
         }
-        fun <T> buildRequestBody(data : T) : String{
+
+        fun <T> buildRequestBody(data: T): String {
             val jsonObject = JSONObject()
             val properties = data!!::class.java.declaredFields
 
@@ -63,7 +64,7 @@ class Client {
         }
     }
 
-     fun buildQueryString(params: Map<String, String>): String {
+    fun buildQueryString(params: Map<String, String>): String {
         val queryString = StringBuilder()
         queryString.append("?")
         for ((key, value) in params) {
@@ -93,18 +94,19 @@ class Client {
                     newUrl = URL(newUrl.toString() + queryString)
                 }
 
-                log("Sending $method request to: $newUrl")
+                httpURLConnection = newUrl.openConnection() as HttpURLConnection
 
-                httpURLConnection?.requestMethod = method
                 httpURLConnection?.setRequestProperty(defaultRequestProperty, defaultRequestContent)
+
+                httpURLConnection?.doInput = true
+                httpURLConnection?.doOutput = (method == POST)
 
                 // Set headers if present
                 headers?.forEach { (key, value) ->
                     httpURLConnection?.setRequestProperty(key, value)
                 }
 
-                httpURLConnection?.doInput = true
-                httpURLConnection?.doOutput = true
+                log("Request Properties: ${httpURLConnection?.requestProperties}")
 
                 // Set request body if present
                 if (requestBody != null) {
@@ -116,7 +118,10 @@ class Client {
                     writer.close()
                 }
 
-                httpURLConnection = newUrl.openConnection() as HttpURLConnection
+
+                httpURLConnection?.requestMethod = method
+//                httpURLConnection?.setReq = method
+                log("Sending ${httpURLConnection?.requestMethod} request to: $newUrl")
 
                 httpURLConnection?.connect()
 
