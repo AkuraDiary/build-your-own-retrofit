@@ -35,6 +35,12 @@ class Client {
             for (prop in properties) {
                 prop.isAccessible = true
                 jsonObject.put(prop.name, prop.get(data))
+                log("")
+                log("Request Body:")
+                log("Property Name: ${prop.name}")
+                log("Property Type: ${prop.type}")
+                log("Property Value: ${prop.get(data)}")
+                log("")
             }
 
             return jsonObject.toString()
@@ -106,12 +112,14 @@ class Client {
 
                 // Set headers if present
                 headers?.forEach { (key, value) ->
+                    log("Request Headers Property: $key : $value")
                     httpURLConnection?.setRequestProperty(key, value)
                 }
 
                 log("Request Properties: ${httpURLConnection?.requestProperties}")
 
                 // Set request body if present
+                log("Request Body is Present ${!requestBody.isNullOrEmpty()}")
                 if (requestBody != null) {
                     log("Request Body: $requestBody")
                     val outputStream = httpURLConnection?.outputStream
