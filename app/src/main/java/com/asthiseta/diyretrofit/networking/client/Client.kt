@@ -20,12 +20,12 @@ class Client {
 
         fun log(message: String) {
             // Replace this with your desired logging mechanism
-            Log.d("[ Rip-troffit Log : ]", message)
+            Log.d("[ Rip-troffit Log ]", message)
         }
 
         fun errorLog(message: String) {
             // Replace this with your desired logging mechanism
-            Log.e("[ Rip-troffit Error : ]", message, Throwable())
+            Log.e("[ Rip-troffit Error ]", message, Throwable())
         }
 
         fun <T> buildRequestBody(data: T): String {
@@ -89,8 +89,11 @@ class Client {
             try {
                 var newUrl = URL(url.toString() + endpoint)
                 // Add query parameters to the URL
+                log("Query Param is Present ${!queryParams.isNullOrEmpty()}")
                 if (!queryParams.isNullOrEmpty()) {
+                    log("Query Params: $queryParams")
                     val queryString = buildQueryString(queryParams)
+                    log("Query string: $queryString")
                     newUrl = URL(newUrl.toString() + queryString)
                 }
 

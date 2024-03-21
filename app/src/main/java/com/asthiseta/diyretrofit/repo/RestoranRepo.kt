@@ -17,7 +17,7 @@ object RestoranRepo {
             endpoint = "list",
             method = Client.GET,
 //             headers = mapOf("Authorization" to "Bearer ayamgoyeng"),
-//             queryParams = mapOf("q" to "restaurant"), //{base url}/list?q=restaurant
+             queryParams = mapOf("q" to "restaurant","username" to "admin", "password" to "admin" ), //{base url}/list?q=restaurant
 //             requestBody = Client.buildRequestBody(
 //                  Ayam("ayam", 10)
 //             ),
