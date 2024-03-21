@@ -1,7 +1,10 @@
 package com.asthiseta.diyretrofit.repo
 
 import com.asthiseta.diyretrofit.model.Ayam
+import com.asthiseta.diyretrofit.model.CustomerReview
+import com.asthiseta.diyretrofit.model.CustomerReviewRequest
 import com.asthiseta.diyretrofit.model.RestaurantResponseModel
+import com.asthiseta.diyretrofit.model.ReviewResponseModel
 import com.asthiseta.diyretrofit.networking.Config
 import com.asthiseta.diyretrofit.networking.client.Client
 import com.asthiseta.diyretrofit.networking.client.ConnectionCalllback
@@ -31,6 +34,30 @@ object RestoranRepo {
                     errorCallback(error)
                 }
             }
+        )
+    }
+
+    fun sendReview(
+        review: CustomerReviewRequest,
+        successCallback: (ReviewResponseModel?) -> Unit,
+        errorCallback: (String) -> Unit
+    ) {
+        Config.client.enqueue(
+            endpoint = "review",
+            method = Client.POST,
+            requestBody = Client.buildRequestBody(review),
+            callback = object  : ConnectionCalllback<ReviewResponseModel?>{
+                override fun onSuccess(response: ReviewResponseModel?) {
+                    // update the UI here
+                    successCallback(response)
+                }
+
+                override fun onError(error: String) {
+                    // update the UI here or show toast
+                    errorCallback(error)
+                }
+            }
+
         )
     }
 }
