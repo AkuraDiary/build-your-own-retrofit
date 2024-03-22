@@ -122,9 +122,14 @@ class Client {
 
                 httpURLConnection = newUrl.openConnection() as HttpURLConnection
 
+                httpURLConnection?.readTimeout = readTimeout
+                httpURLConnection?.connectTimeout = connectTimeout
+
                 httpURLConnection?.setRequestProperty(defaultRequestProperty, defaultRequestContent)
 
                 httpURLConnection?.doInput = true
+
+
                 httpURLConnection?.doOutput = (method == POST)
 
                 // Set headers if present
