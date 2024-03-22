@@ -10,6 +10,11 @@ import java.net.URLEncoder
 
 class Client {
     companion object {
+
+        const val MINUTE = 60000
+        const val SECOND = 1000
+        const val MILLISECOND = 1
+
         const val POST = "POST"
         const val GET = "GET"
         const val PUT = "PUT"
@@ -50,6 +55,8 @@ class Client {
     var httpURLConnection: HttpURLConnection? = null
     var innerParser: Parser? = null
     var url: URL? = null
+    var connectTimeout = 15000
+    var readTimeout = 15000
     var defaultRequestContent = "application/json"
     var defaultRequestProperty = "Content-Type"
 
@@ -57,6 +64,16 @@ class Client {
         private val client = Client()
         fun setUrl(url: String): Builder {
             client.url = URL(url)
+            return this
+        }
+
+        fun setConnectTimeout(timeout: Int, timeUnit : Int): Builder {
+            client.connectTimeout = timeout * timeUnit
+            return this
+        }
+
+        fun setReadTimeout(timeout: Int, timeUnit: Int): Builder {
+            client.readTimeout = timeout * timeUnit
             return this
         }
 
