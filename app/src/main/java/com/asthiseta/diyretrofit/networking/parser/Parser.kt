@@ -15,8 +15,10 @@ interface Parser {
 @Suppress("UNCHECKED_CAST")
 class JsonParser : Parser {
     override fun <T> parse(jsonString: String, clazz: Class<T>): T? {
+
+        val isRawList = clazz.isAssignableFrom(List::class.java)
         val jsonObject =
-            if ((clazz.isAssignableFrom(List::class.java))) {
+            if (isRawList) {
 
                 // If jsonString starts with '[', it indicates it's an array, so wrap it in a JSONObject
                 val jsonArray = JSONArray(jsonString)
@@ -27,9 +29,9 @@ class JsonParser : Parser {
 
         @Suppress("IMPLICIT_CAST_TO_ANY")
         val instance =
-            if (clazz.isAssignableFrom(List::class.java)) ListHolder::class.java.newInstance() else clazz.newInstance()
+            if (isRawList) ListHolder::class.java.newInstance() else clazz.newInstance()
         val declaredFields =
-            if (clazz.isAssignableFrom(List::class.java)) ListHolder::class.java.declaredFields else clazz.declaredFields
+            if (isRawList) ListHolder::class.java.declaredFields else clazz.declaredFields
 
         for (field in declaredFields) {
             field.isAccessible = true
@@ -59,7 +61,8 @@ class JsonParser : Parser {
             }
         }
 
-        val returnInstance =  if (clazz.isAssignableFrom(List::class.java) ) (instance as ListHolder<T>).arrayData else instance as T?
+        val returnInstance =
+            if (isRawList) (instance as ListHolder<T>).arrayData else instance as T?
         return returnInstance
     }
 
