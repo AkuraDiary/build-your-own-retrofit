@@ -26,10 +26,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding?.root)
 //        getAllRestaurant()
 
-        val ayam = Ayam("ayam", 1)
-        Log.d("Ayam", Client.buildRequestBody(ayam))
+//        val ayam = Ayam("ayam", 1)
+//        Log.d("Ayam", Client.buildRequestBody(ayam))
 
-        sendReviewRestaurant()
+//        sendReviewRestaurant()
+
+        doLogin()
+    }
+
+    private fun doLogin() {
+        RestoranRepo.login("admin", "admin", {
+            runOnUiThread {
+                binding?.textView?.text = it.toString()
+            }
+        },
+            {
+                runOnUiThread {
+                    binding?.textView?.text = it.toString()
+                }
+            }
+        )
     }
 
     private fun sendReviewRestaurant() {
@@ -42,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             ),
             successCallback = { response ->
 
-                runOnUiThread{
+                runOnUiThread {
                     // update the UI here
                     response?.let {
                         binding?.textView?.text = it.message.toString()
@@ -64,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         RestoranRepo.getRestaurants(
             successCallback = { response ->
 
-                runOnUiThread{
+                runOnUiThread {
                     // update the UI here
                     response?.let {
                         binding?.textView?.text = it.toString()

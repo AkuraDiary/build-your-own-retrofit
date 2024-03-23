@@ -1,5 +1,6 @@
 package com.asthiseta.diyretrofit.repo
 
+import com.asthiseta.diyretrofit.model.AkunModel
 import com.asthiseta.diyretrofit.model.Ayam
 import com.asthiseta.diyretrofit.model.CustomerReview
 import com.asthiseta.diyretrofit.model.CustomerReviewRequest
@@ -46,7 +47,7 @@ object RestoranRepo {
             endpoint = "review",
             method = Client.POST,
             requestBody = Client.buildRequestBody(review),
-            callback = object  : ConnectionCalllback<ReviewResponseModel?>{
+            callback = object : ConnectionCalllback<ReviewResponseModel?> {
                 override fun onSuccess(response: ReviewResponseModel?) {
                     // update the UI here
                     successCallback(response)
@@ -58,6 +59,32 @@ object RestoranRepo {
                 }
             }
 
+        )
+    }
+
+
+    fun login(
+        username: String,
+        password: String,
+        successCallback: (AkunModel?) -> Unit,
+        errorCallback: (String) -> Unit
+    ) {
+        Config.client.enqueue(
+            endpoint = "login",
+            method = Client.POST,
+            queryParams = mapOf(
+                "username" to username, "password" to password
+            ),
+            callback = object : ConnectionCalllback<AkunModel?> {
+                override fun onSuccess(response: AkunModel?) {
+                    successCallback(response)
+                }
+
+                override fun onError(error: String) {
+                    errorCallback(error)
+
+                }
+            }
         )
     }
 }
