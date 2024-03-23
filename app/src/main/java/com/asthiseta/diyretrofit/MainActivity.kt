@@ -10,10 +10,12 @@ import com.asthiseta.diyretrofit.databinding.ActivityMainBinding
 import com.asthiseta.diyretrofit.model.Ayam
 import com.asthiseta.diyretrofit.model.CustomerReview
 import com.asthiseta.diyretrofit.model.CustomerReviewRequest
+import com.asthiseta.diyretrofit.model.RestaurantModel
 import com.asthiseta.diyretrofit.model.RestaurantResponseModel
 import com.asthiseta.diyretrofit.networking.Config
 import com.asthiseta.diyretrofit.networking.client.Client
 import com.asthiseta.diyretrofit.networking.client.ConnectionCalllback
+import com.asthiseta.diyretrofit.networking.parser.JsonParser
 import com.asthiseta.diyretrofit.repo.RestoranRepo
 import com.asthiseta.diyretrofit.repo.RestoranRepo.sendReview
 
@@ -26,12 +28,44 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding?.root)
 //        getAllRestaurant()
 
+        val jsonString = """
+            
+            [
+            {
+          "id": "rqdv5juczeskfw1e867",
+          "name": "Melting Pot",
+          "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. ...",
+          "pictureId": "14",
+          "city": "Medan",
+          "rating": 4.2
+      },
+      {
+          "id": "s1knt6za9kkfw1e867",
+          "name": "Kafe Kita",
+          "description": "Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. ...",
+          "pictureId": "25",
+          "city": "Gorontalo",
+          "rating": 4
+      }
+  ]
+"""
+        parseResponse<List<RestaurantModel>>(jsonString)
+
 //        val ayam = Ayam("ayam", 1)
 //        Log.d("Ayam", Client.buildRequestBody(ayam))
 
 //        sendReviewRestaurant()
 
-        doLogin()
+//        doLogin()
+    }
+
+    private inline fun <reified T> parseResponse(jsonString: String) {
+        val parsed = JsonParser().parse(jsonString, T::class.java)
+        binding?.textView?.text = parsed.toString()
+    //as List<RestaurantModel>?
+
+//        Client.log(parsed.toString())
+
     }
 
     private fun doLogin() {

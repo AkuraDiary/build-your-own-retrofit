@@ -1,6 +1,7 @@
 package com.asthiseta.diyretrofit.networking.client
 
 import android.util.Log
+import com.asthiseta.diyretrofit.networking.parser.ListHolder
 import com.asthiseta.diyretrofit.networking.parser.Parser
 import org.json.JSONObject
 import java.io.OutputStreamWriter
@@ -167,8 +168,10 @@ class Client {
                     val response = inputStream?.bufferedReader().use { it?.readText() }
                     log("Response: $response")
 
-                    val modelResponse = innerParser!!.parse(response!!, T::class.java)
-                    callback.onSuccess(modelResponse as T?)
+                    val modelResponse =
+                        innerParser!!.parse(response!!, T::class.java)
+
+                    callback.onSuccess(modelResponse)
 
                 } else {
                     val error =
