@@ -35,6 +35,39 @@ I'm trying to use the generalization and abstraction for the parser so that it c
   - The attribute should be using `var` instead of `val`
   - The attribute should be Nullable 
   - The attribute should be initiated as null
+  - If you want to parse a Raw list / JsonArray or your response looks like this : 
+
+```json
+    
+    [
+      {
+          "id": "rqdv5juczeskfw1e867",
+          "name": "Melting Pot",
+          "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. ...",
+          "pictureId": "14",
+          "city": "Medan",
+          "rating": 4.2
+      },
+      {
+          "id": "s1knt6za9kkfw1e867",
+          "name": "Kafe Kita",
+          "description": "Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. ...",
+          "pictureId": "25",
+          "city": "Gorontalo",
+          "rating": 4
+      }
+  ]
+
+```
+you have to wrap your model class inside another class like this
+```kotlin
+data class RawListWrapperModel(
+  var data : List<Model? = null
+)
+```
+then use your wrapper class as your return type instead
+
+
 
 ```kotlin
 // from the criteria above
@@ -54,8 +87,18 @@ interface Parser {
 
 class JsonParser : Parser {
     override fun <T> parse(jsonString: String, clazz: Class<T>): Any? {
-        val jsonObject = JSONObject(jsonString)
 
+       // I convert it into JSON object first here, for I can't find the way
+       // to directly parsing the list
+
+        val isRawList = jsonString.trim().startsWith("[")
+            val modifiedJsonString = if (isRawList) {
+                "{\"data\":$jsonString}"
+            } else {
+                jsonString
+            }
+
+        val jsonObject = JSONObject(modifiedJsonString)
 
         // HERE
         val instance = clazz.newInstance() 
