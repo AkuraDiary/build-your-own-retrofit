@@ -171,7 +171,7 @@ class Client {
                     val modelResponse =
                         innerParser!!.parse(response!!, T::class.java)
 
-                    callback.onSuccess(modelResponse)
+                    callback.onSuccess(modelResponse as T)
 
                 } else {
                     val error =

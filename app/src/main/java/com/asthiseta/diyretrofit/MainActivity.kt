@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
-//        getAllRestaurant()
+        getAllRestaurant()
 
         val jsonString = """
             
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
       }
   ]
 """
-        parseResponse<List<RestaurantModel>>(jsonString)
+//        parseResponse<List<RestaurantModel>>(jsonString)
 
 //        val ayam = Ayam("ayam", 1)
 //        Log.d("Ayam", Client.buildRequestBody(ayam))
@@ -62,10 +62,6 @@ class MainActivity : AppCompatActivity() {
     private inline fun <reified T> parseResponse(jsonString: String) {
         val parsed = JsonParser().parse(jsonString, T::class.java)
         binding?.textView?.text = parsed.toString()
-    //as List<RestaurantModel>?
-
-//        Client.log(parsed.toString())
-
     }
 
     private fun doLogin() {
