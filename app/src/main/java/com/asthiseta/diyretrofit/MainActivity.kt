@@ -1,24 +1,15 @@
 package com.asthiseta.diyretrofit
 
+//import com.asthiseta.diyretrofit.model.RawListWrapper
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.asthiseta.diyretrofit.databinding.ActivityMainBinding
-import com.asthiseta.diyretrofit.model.Ayam
-import com.asthiseta.diyretrofit.model.CustomerReview
 import com.asthiseta.diyretrofit.model.CustomerReviewRequest
-import com.asthiseta.diyretrofit.model.RawListWrapper
 import com.asthiseta.diyretrofit.model.RestaurantModel
-import com.asthiseta.diyretrofit.model.RestaurantResponseModel
-import com.asthiseta.diyretrofit.networking.Config
-import com.asthiseta.diyretrofit.networking.client.Client
-import com.asthiseta.diyretrofit.networking.client.ConnectionCalllback
+import com.asthiseta.diyretrofit.model.RestaurantModelList
 import com.asthiseta.diyretrofit.networking.parser.JsonParser
 import com.asthiseta.diyretrofit.repo.RestoranRepo
-import com.asthiseta.diyretrofit.repo.RestoranRepo.sendReview
 
 class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
@@ -50,7 +41,8 @@ class MainActivity : AppCompatActivity() {
       }
   ]
 """
-parseResponse<RawListWrapper>(jsonString)
+
+parseResponse<RestaurantModelList>(jsonString)
 //        binding?.textView?.text = parsed.toString()
 
 //        val ayam = Ayam("ayam", 1)
@@ -62,7 +54,7 @@ parseResponse<RawListWrapper>(jsonString)
     }
 
     private inline fun <reified T> parseResponse(jsonString: String) {
-        val parsed = JsonParser().parse(jsonString, T::class.java)
+        val parsed = JsonParser().parse(jsonString, T::class.java) as T
         binding?.textView?.text = parsed.toString()
     }
 
