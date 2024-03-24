@@ -1,7 +1,6 @@
 package com.asthiseta.diyretrofit.networking.client
 
 import android.util.Log
-import com.asthiseta.diyretrofit.networking.parser.ListHolder
 import com.asthiseta.diyretrofit.networking.parser.Parser
 import org.json.JSONObject
 import java.io.OutputStreamWriter

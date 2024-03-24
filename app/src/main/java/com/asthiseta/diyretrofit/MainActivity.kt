@@ -10,6 +10,7 @@ import com.asthiseta.diyretrofit.databinding.ActivityMainBinding
 import com.asthiseta.diyretrofit.model.Ayam
 import com.asthiseta.diyretrofit.model.CustomerReview
 import com.asthiseta.diyretrofit.model.CustomerReviewRequest
+import com.asthiseta.diyretrofit.model.RawListWrapper
 import com.asthiseta.diyretrofit.model.RestaurantModel
 import com.asthiseta.diyretrofit.model.RestaurantResponseModel
 import com.asthiseta.diyretrofit.networking.Config
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
-        getAllRestaurant()
+//        getAllRestaurant()
 
         val jsonString = """
             
@@ -49,7 +50,8 @@ class MainActivity : AppCompatActivity() {
       }
   ]
 """
-//        parseResponse<List<RestaurantModel>>(jsonString)
+parseResponse<RawListWrapper>(jsonString)
+//        binding?.textView?.text = parsed.toString()
 
 //        val ayam = Ayam("ayam", 1)
 //        Log.d("Ayam", Client.buildRequestBody(ayam))

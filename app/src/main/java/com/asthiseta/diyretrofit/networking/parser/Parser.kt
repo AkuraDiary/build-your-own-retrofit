@@ -13,7 +13,13 @@ interface Parser {
 class JsonParser : Parser {
     override fun <T> parse(jsonString: String, clazz: Class<T>): Any? {
         try{
-            val jsonObject = JSONObject(jsonString)
+            val isRawList = jsonString.trim().startsWith("[")
+            val modifiedJsonString = if (isRawList) {
+                "{\"data\":$jsonString}"
+            } else {
+                jsonString
+            }
+            val jsonObject = JSONObject(modifiedJsonString)
             val instance = clazz.newInstance()
             val declaredFields = clazz.declaredFields
             for (field in declaredFields) {
