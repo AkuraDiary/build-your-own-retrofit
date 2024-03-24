@@ -8,6 +8,7 @@ import com.asthiseta.diyretrofit.databinding.ActivityMainBinding
 import com.asthiseta.diyretrofit.model.CustomerReviewRequest
 import com.asthiseta.diyretrofit.model.RestaurantModel
 import com.asthiseta.diyretrofit.model.RestaurantModelList
+import com.asthiseta.diyretrofit.networking.glidealternative.ImageLoader
 import com.asthiseta.diyretrofit.networking.parser.JsonParser
 import com.asthiseta.diyretrofit.repo.RestoranRepo
 
@@ -42,7 +43,8 @@ class MainActivity : AppCompatActivity() {
   ]
 """
 
-parseResponse<RestaurantModelList>(jsonString)
+        parseResponse<RestaurantModelList>(jsonString)
+
 //        binding?.textView?.text = parsed.toString()
 
 //        val ayam = Ayam("ayam", 1)
@@ -51,6 +53,10 @@ parseResponse<RestaurantModelList>(jsonString)
 //        sendReviewRestaurant()
 
 //        doLogin()
+        ImageLoader(
+            "https://restaurant-api.dicoding.dev/images/small/14",
+            binding?.imageView!!
+        ).loadImage()
     }
 
     private inline fun <reified T> parseResponse(jsonString: String) {
