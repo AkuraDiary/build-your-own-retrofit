@@ -4,6 +4,8 @@ The competition's rules restricted the usage of other libraries besides the buil
 
 And I think it's stupid, so why don't we make the `retrofit` ourselves
 
+here I'm using [Dicoding's Restaurant Api](https://restaurant-api.dicoding.dev/#/) 
+
 # Explanations And Usage
 
 ### Libraries Used
